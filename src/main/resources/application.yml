@@ -1,1 +1,14 @@
-
+spring:
+  datasource:
+    mysql:
+      jdbc-url: jdbc:mysql://localhost:3306/insert-test
+      username: root
+      password: test
+      driverClassName: com.mysql.cj.jdbc.Driver
+      platform: mysql
+    pg:
+      jdbc-url: jdbc:postgresql://localhost:5432/insert-test
+      username: root
+      password: test
+      driverClassName: org.postgresql.Driver
+      platform: postgresql

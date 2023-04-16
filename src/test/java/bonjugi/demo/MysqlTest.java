@@ -4,38 +4,57 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Slf4j
 @SpringBootTest
-class MysqlInsertTest {
+class MysqlTest {
 
 
     @Autowired
-    private JdbcTemplate mysqlTemplate;
+    @Qualifier("mysqlTemplate")
+    private JdbcTemplate template;
+
     @Autowired
     private InsertService insertService;
 
-    private Set<Long> executionSeconds = new HashSet<>();
 
+    /**
+     : 497 회 성공. 소요 시간 : 220
+     : 498 회 성공. 소요 시간 : 153
+     : 499 회 성공. 소요 시간 : 163
+     : 전체 소요 시간 : 107,247  (postgresql 의 varchar tsid가 50초였어서, 2배 느리긴 하지만 상당히 빠른편)
+     */
     @Test
-    @DisplayName("pg tsid")
+    @DisplayName("varchar tsid")
     void tsid() {
-        List tsids = insertService.getTsids(25000);
-        for (int i = 0; i < 1000; i++) {
-
-            long start = System.currentTimeMillis();
-
-            insertService.insertObjects(mysqlTemplate, tsids);
-
-            long executionSeconds = (System.currentTimeMillis() - start) / 1000;
-            log.info("{} 회 성공. 소요 시간(초) : {}", i, executionSeconds);
+        long start1 = System.currentTimeMillis();
+        for (int i = 0; i < 500; i++) {
+            long start2 = System.currentTimeMillis();
+            insertService.insertToVarchar(template, insertService.getTsids(25000));
+            log.info("{} 회 성공. 소요 시간 : {}", i, (System.currentTimeMillis() - start2));
         }
+        log.info("전체 소요 시간 : {}", (System.currentTimeMillis() - start1));
+    }
+
+    /**
+     * 뒤로갈수록 급격히 떨어짐. 테스트 불가
+     * 71회차 부터는 20초
+     * 80회차 부터는 40초
+     * 100회차 부터는 90초
+     */
+    @Test
+    @DisplayName("varchar uuid")
+    void uuid() {
+        long start1 = System.currentTimeMillis();
+        for (int i = 0; i < 500; i++) {
+            long start2 = System.currentTimeMillis();
+            insertService.insertToVarchar(template, insertService.getUuids(25000));
+            log.info("{} 회 성공. 소요 시간 : {}", i, (System.currentTimeMillis() - start2));
+        }
+        log.info("전체 소요 시간 : {}", (System.currentTimeMillis() - start1));
     }
 
 }

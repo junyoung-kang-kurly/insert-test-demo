@@ -1,7 +1,22 @@
 version: '3'
 
 services:
-  test-redis:
-    image: redis
+  mysql-insert-test:
+    image: mysql:8.0
+    container_name: mysql-insert-test
     ports:
-    - 6379:6379
+      - 3306:3306
+    environment:
+      #      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: insert-test
+
+  postgresql-insert-test:
+    image: postgres
+    container_name: postgresql-insert-test
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: insert-test

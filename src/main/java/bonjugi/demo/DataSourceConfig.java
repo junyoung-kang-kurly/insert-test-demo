@@ -1,53 +1,38 @@
 package bonjugi.demo;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import javax.sql.DataSource;
 
 @Configuration
-public class TestConfig {
+public class DataSourceConfig {
 
-    @Bean("mysqlJdbcTemplate")
-    public JdbcTemplate mysqlTemplate(DriverManagerDataSource mysqlDataSource) {
+    @Bean
+    public JdbcTemplate mysqlTemplate(
+        @Qualifier("mysqlDataSource") DataSource mysqlDataSource) {
         return new JdbcTemplate(mysqlDataSource);
     }
 
-    @Bean("pgJdbcTemplate")
-    public JdbcTemplate pgJdbcTemplate(DriverManagerDataSource mysqlDataSource) {
+    @Bean
+    public JdbcTemplate postgresqlTemplate(
+        @Qualifier("postgresqlDataSource") DataSource mysqlDataSource) {
         return new JdbcTemplate(mysqlDataSource);
     }
-
 
     @Bean("mysqlDataSource")
-    public DriverManagerDataSource mysqlDataSource() {
-        // MySQL 연결 정보 설정
-        String mysqlUrl = "jdbc:mysql://localhost:3306/insert-test";
-        String mysqlUser = "your_mysql_username";
-        String mysqlPassword = "your_mysql_password";
-
-
-        // MySQL 데이터베이스 연결 DataSource 생성
-        DriverManagerDataSource mysqlDataSource = new DriverManagerDataSource();
-        mysqlDataSource.setUrl(mysqlUrl);
-        mysqlDataSource.setUsername(mysqlUser);
-        mysqlDataSource.setPassword(mysqlPassword);
-        return mysqlDataSource;
+    @ConfigurationProperties(prefix = "spring.datasource.mysql")
+    public DataSource mysqlDataSource() {
+        return DataSourceBuilder.create().build();
     }
 
-    @Bean("pgDataSource")
-    public DriverManagerDataSource postgreSql() {
-        // PostgreSQL 연결 정보 설정
-        String postgresUrl = "jdbc:postgresql://localhost:5432/insert-test";
-        String postgresUser = "your_postgres_username";
-        String postgresPassword = "your_postgres_password";
-
-        // PostgreSQL 데이터베이스 연결 DataSource 생성
-        DriverManagerDataSource postgresDataSource = new DriverManagerDataSource();
-        postgresDataSource.setUrl(postgresUrl);
-        postgresDataSource.setUsername(postgresUser);
-        postgresDataSource.setPassword(postgresPassword);
-
-        return postgresDataSource;
+    @Bean("postgresqlDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.pg")
+    public DataSource postgresqlDataSource() {
+        return DataSourceBuilder.create().build();
     }
 }
