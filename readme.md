@@ -1,6 +1,16 @@
-## 5가지 테스트
-5가지 insert 성능 테스트를 했습니다.
+## 코드 실행 방법
 
+1. [docker-compose.yml](src%2Fmain%2Fresources%2Fdocker%2Fdocker-compose.yml)docker-compose.yml 실행 (mysql, postgresql 컨테이너 기동)
+2. mysql과 postgresql 에 [varchar_table.sql](src%2Fmain%2Fresources%2Fsql%2Fvarchar_table.sql) 실행
+3. postgresql에 [postgresql_uuid_table.sql](src%2Fmain%2Fresources%2Fsql%2Fpostgresql_uuid_table.sql) 실행
+4. MySqlTest과 PostgresqlTest 의 @Test 메소드들을 하나씩 실행하여 경과속도 모니터링
+
+
+
+## 5가지 테스트
+MySqlTest과 PostgresqlTest에는 @Test 메소드가 총 5개 있고, 각각 insert 성능을 테스트 합니다.
+
+공통된 로직은 다음과 같습니다.
 - 2.5만건씩 multiple insert를 수행 하며
 - 500회까지 걸린 시간을 기록 했습니다.
 - [tsid](https://vladmihalcea.com/uuid-database-primary-key/) 는 time sorted 된 값 입니다
